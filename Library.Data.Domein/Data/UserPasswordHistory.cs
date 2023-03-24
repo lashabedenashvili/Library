@@ -7,7 +7,7 @@ using static Library.Data.Domein.Data.Enum;
 
 namespace Library.Data.Domein.Data
 {
-    public class UserPasswordHistory:IGloblaId
+    public class UserPasswordHistory:IGlobald
     {
         public int Id { get; set; }        
         public int UserId { get; set; }

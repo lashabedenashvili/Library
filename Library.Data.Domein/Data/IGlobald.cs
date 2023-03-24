@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Library.Data.Domein.Data
 {
-    internal interface IGloblaId
+    public interface IGlobald
     {
         public int Id { get; set; }
     }
