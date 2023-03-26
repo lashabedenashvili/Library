@@ -25,6 +25,10 @@ namespace Library.DataBase.GeneralRepository
             return Tresult.Entity;
         }
 
+        public async Task<bool> AnyAsync(Expression<Func<TSource, bool>> predicate)
+        {
+            return await _entities.AsNoTracking().AnyAsync(predicate);
+        }
         public async Task Delete(TSource entity)
         {
             _entities.Remove(entity);

@@ -1,4 +1,5 @@
 using Library;
+using Library.Application.LibraryServ;
 using Library.Application.UserServ;
 using Library.Data.Domein.Domein;
 using Library.Data.Domein.Domein.EntityModelBuilders;
@@ -37,13 +38,13 @@ try
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
-    builder.Services.AddScoped<IContext, Context>();
     builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<ILibraryService,LibraryService>();
     builder.Services.AddScoped(typeof(IGeneralRepository<>), typeof(GeneralRepository<>));
 
 
     //validator
-    builder.Services.AddValidators();
+    //builder.Services.AddValidators();
 
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer("Bearer", options =>

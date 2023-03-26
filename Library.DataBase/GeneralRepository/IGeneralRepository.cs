@@ -11,6 +11,7 @@ namespace Library.DataBase.GeneralRepository
     public interface IGeneralRepository<TSource> where TSource : class,IGlobald
     {
         Task<TSource> AddAsync(TSource entity);
+        Task<bool> AnyAsync(Expression<Func<TSource, bool>> predicate);
         Task Update(TSource entity);
         Task Delete(TSource entity);
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
