@@ -62,6 +62,17 @@ namespace Library.Application.UserServ
             }
             return new BadApiResponse<string>("Email is Already Exist");
         }
+        public async Task<ApiResponse<string>> Delete(int id)
+        {
+            var userDb = await _userRepo.GetAsync(x => x.Id == id);
+            if (userDb != null)
+            {
+                await _userRepo.Delete(userDb);
+                await _userRepo.SaveChangesAsync();
+                return new SuccessApiResponse<string>("User has been deleted");
+            }
+            return new BadApiResponse<string>("User Does not exist");
+        }
         private string CreateToken(User user)
         {
             List<Claim> claims = new List<Claim>

@@ -11,5 +11,6 @@ namespace Library.Application.UserServ
     public interface IUserService
     {
         Task<ApiResponse<string>> Registration(UserRegistrationDto request);
+        Task<ApiResponse<string>> Delete(int id);
     }
 }

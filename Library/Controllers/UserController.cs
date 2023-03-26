@@ -13,10 +13,17 @@ namespace Library.Controllers
         {
             _userService = userService;
         }
+
         [HttpPost("UserRegistration")]
         public async Task<ActionResult<ApiResponse<string>>> UserRegistration(UserRegistrationDto request)
         {
             return ResponseResult(await _userService.Registration(request));
+        }
+
+        [HttpDelete("UserDelete")]
+        public async Task<ActionResult<ApiResponse<string>>> UserDelete(int id)
+        {
+            return ResponseResult(await _userService.Delete(id));
         }
     }
 }
