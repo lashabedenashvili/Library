@@ -23,7 +23,7 @@ namespace Library.Controllers
         }
 
 
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(Roles="admin",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("UserDelete")]
         public async Task<ActionResult<ApiResponse<string>>> UserDelete()
         {

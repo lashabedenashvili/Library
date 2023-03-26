@@ -1,4 +1,5 @@
 ﻿using Library.Data.Domein.Data;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,10 @@ namespace Library.DataBase.GeneralRepository
 {
     public interface IGeneralRepository<TSource> where TSource : class,IGlobald
     {
+        
+        IQueryable<TSource> AsQuareble();
+
+        
         Task<TSource> AddAsync(TSource entity);
         Task<bool> AnyAsync(Expression<Func<TSource, bool>> predicate);
         Task Update(TSource entity);

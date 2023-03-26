@@ -18,7 +18,7 @@ namespace Library.Data.Domein.Domein.EntityModelBuilders
             modelBuilder.Property(x => x.SurName).HasMaxLength(150).IsRequired();
             modelBuilder.Property(x => x.BirthDate).HasColumnType("date");
             modelBuilder.Property(x => x.PhoneNumber).HasMaxLength(25).IsRequired();
-            modelBuilder.Property(x => x.Email).HasMaxLength(50).IsRequired();
+            modelBuilder.Property(x => x.Email).HasMaxLength(50).IsRequired();            
             modelBuilder.Property(x => x.IsActive).IsRequired();
 
             modelBuilder

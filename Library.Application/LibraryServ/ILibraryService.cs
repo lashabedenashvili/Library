@@ -12,5 +12,7 @@ namespace Library.Application.LibraryServ
     {
         Task<ApiResponse<string>> AddBook(AddBookDto request);
         Task<ApiResponse<UpdateBookDto>> UpdateBook(UpdateBookDto request, string bookName);
+        Task<ApiResponse<List<GetBooksDto>>> GetBooksByFiltering(FilterBookDto request);
+        Task<ApiResponse<string>> BookStatusChange(int bookId, bool inLibrrary);
     }
 }

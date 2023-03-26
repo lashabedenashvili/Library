@@ -24,10 +24,6 @@ try
     builder.Logging.ClearProviders();
     builder.Host.UseNLog();
 
-
-    builder.Services.AddControllers().AddJsonOptions(x =>
-   x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
-
     // Add services to the container.
     builder.Services.AddDbContext<Context>(options => options
 .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

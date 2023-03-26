@@ -12,6 +12,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using static Library.Data.Domein.Data.Enum;
 
 namespace Library.Application.UserServ
 {
@@ -46,7 +47,9 @@ namespace Library.Application.UserServ
                     Name = request.Name,
                     SurName = request.SurName,
                     PhoneNumber = request.PhoneNumber,
-                    IsActive = true
+                    IsActive = false,
+                    UserRole=UserRole.member
+                    
                 };
                 var userPassHistory = new UserPasswordHistory
                 {
@@ -164,7 +167,8 @@ namespace Library.Application.UserServ
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
-                new Claim(ClaimTypes.Email,user.Email.ToString())
+                new Claim(ClaimTypes.Email,user.Email.ToString()),
+                new Claim(ClaimTypes.Role,user.UserRole.Value.ToString())
             };            
 
             SymmetricSecurityKey key = new SymmetricSecurityKey(System.Text.Encoding.UTF8

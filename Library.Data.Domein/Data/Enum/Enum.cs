@@ -13,5 +13,10 @@ namespace Library.Data.Domein.Data
             male = 1,
             female = 2,
         }
+        public enum UserRole
+        {
+            member=1,
+            admin=2,
+        }
     }
 }

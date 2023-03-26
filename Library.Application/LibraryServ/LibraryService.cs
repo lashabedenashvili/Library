@@ -3,13 +3,6 @@ using Library.DataBase.GeneralRepository;
 using Library.Infrastructure.ApiServiceResponse;
 using Library.Infrastructure.Dto.LibraryDto;
 using Microsoft.EntityFrameworkCore;
-using SixLabors.ImageSharp.Formats;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Library.Application.LibraryServ
 {
     public class LibraryService: ILibraryService
@@ -22,12 +15,26 @@ namespace Library.Application.LibraryServ
             (
             IGeneralRepository<Author>authorRepo,
             IGeneralRepository<Book> bookRepo,
-            IGeneralRepository<BooksAuthors> BooksAuthorsRepo
+            IGeneralRepository<BooksAuthors> booksAuthorsRepo
             )
         {
             _authorRepo = authorRepo;
             _bookRepo = bookRepo;
-            _booksAuthorsRepo = BooksAuthorsRepo;
+            _booksAuthorsRepo = booksAuthorsRepo;
+        }
+        public async Task<ApiResponse<string>>BookStatusChange(int bookId, bool inLibrary)
+        {
+           var bookStatusDb = await _bookRepo
+                .Where(x => x.Id == bookId)
+                .FirstOrDefaultAsync();
+
+            if (bookStatusDb == null) return new BadApiResponse<string>("Book does not exist");
+            if (bookStatusDb.InLibrary == inLibrary) return new BadApiResponse<string>("");
+
+            bookStatusDb.InLibrary= inLibrary;
+            await _bookRepo.Update(bookStatusDb);
+            await _bookRepo.SaveChangesAsync();
+            return new SuccessApiResponse<string>("Book status has been changed");
         }
         private async Task<ApiResponse<byte[]>>ImageValidator(string image)
         {
@@ -114,5 +121,53 @@ namespace Library.Application.LibraryServ
             }
             return new BadApiResponse<UpdateBookDto>("Book is not exist");
         }
+        public async Task<ApiResponse<List<GetBooksDto>>> GetBooksByFiltering(FilterBookDto request)
+        {
+
+            var data = _bookRepo.AsQuareble()
+                .Where(x=>x.InLibrary==true)
+                .Include(e => e.BooksAuthors)
+                .ThenInclude(e => e.Author).AsQueryable();
+
+            if (request.Id.HasValue)
+                data = data.Where(x => x.Id == request.Id.Value);
+            if (request.InLibrary.HasValue)
+                data = data.Where(x => x.InLibrary == true);
+            if (request.RatingFrom.HasValue)
+                data = data.Where(x => x.Rating >= request.RatingFrom);
+            if (request.RatingTo.HasValue)
+                data = data.Where(x => x.Rating <= request.RatingTo);
+            if (!string.IsNullOrEmpty(request.Title))
+                data = data.Where(x => x.Title.Contains(request.Title));
+            if (!string.IsNullOrEmpty(request.Description))
+                data = data.Where(x => x.Description.Contains(request.Description));
+
+            data = data.Skip((request.PageNumb - 1) * request.PageSize).Take(request.PageSize);
+
+            var result = await data.ToListAsync();            
+
+            return new SuccessApiResponse<List<GetBooksDto>>(result.Select(e =>
+           {
+               return new GetBooksDto()
+               {
+                   Id = e.Id,
+                   Title = e.Title,
+                   Description = e.Description,
+                   InLibrary = e.InLibrary,
+                   Rating = e.Rating,
+                   Image = Convert.ToBase64String(e.Image),
+                   Author = e.BooksAuthors.SelectMany(e => new List<AuthorDto>() { new AuthorDto()
+                   {
+                       Name = e.Author.Name,
+                       Surname = e.Author.Surname,
+                       BirthDate = e.Author.BirthDate
+                   } }).ToList()
+                };
+           }).ToList());
+        
+        }
+        public async Task<ApiResponse<List<>
+        
+
     }
 }
