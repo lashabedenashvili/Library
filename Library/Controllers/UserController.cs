@@ -25,5 +25,25 @@ namespace Library.Controllers
         {
             return ResponseResult(await _userService.Delete(id));
         }
+
+        [HttpPost("UserUpdate")]
+        public async Task<ActionResult<ApiResponse<UserUpdateDto>>> UserUpdate(UserUpdateDto request)
+        {
+            int id = 4;
+            return ResponseResult(await _userService.Update(id,request));
+        }
+
+        [HttpPost("PasswordChange")]
+        public async Task<ActionResult<ApiResponse<string>>> PasswordChange(ChangePasswordDto request)
+        {
+            int id = 4;
+            return ResponseResult(await _userService.UpdatePassword(request, id));
+        }
+
+        [HttpPost("LogIn")]
+        public async Task<ActionResult<ApiResponse<string>>> LogIn(UserLogInDto request)
+        {           
+            return ResponseResult(await _userService.LogIn(request));
+        }
     }
 }
