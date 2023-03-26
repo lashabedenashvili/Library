@@ -3,7 +3,9 @@ using Library.Application.UserServ;
 using Library.Data.Domein.Domein;
 using Library.Data.Domein.Domein.EntityModelBuilders;
 using Library.DataBase.GeneralRepository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using NLog;
 using NLog.Web;
 using System.Text.Json.Serialization;
@@ -48,7 +50,6 @@ try
         {
             options.TokenValidationParameters = new TokenValidationParameters
             {
-
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8
                 .GetBytes(builder.Configuration

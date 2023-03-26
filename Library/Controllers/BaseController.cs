@@ -1,5 +1,6 @@
 ﻿using Library.Infrastructure.ApiServiceResponse;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Library.Controllers
 {
@@ -19,14 +20,14 @@ namespace Library.Controllers
                     return Ok(apiResponse);
             }
         }
-        //protected string GetEmail()
-        //{
-        //    return User.FindFirstValue(ClaimTypes.Email);
-        //}       
+        protected string GetEmail()
+        {
+            return User.FindFirstValue(ClaimTypes.Email);
+        }
 
-        //protected int GetId()
-        //{
-        //    return Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
-        //}
+        protected int GetId()
+        {
+            return Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        }
     }
 }
