@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Library.Data.Domein\Library.Data.Domein.csproj" />
     <ProjectReference Include="..\Library.DataBase\Library.DataBase.csproj" />
+    <ProjectReference Include="..\Library.Infrastructure\Library.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

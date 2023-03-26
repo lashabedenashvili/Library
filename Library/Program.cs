@@ -1,5 +1,8 @@
+using Library;
+using Library.Application.UserServ;
 using Library.Data.Domein.Domein;
 using Library.Data.Domein.Domein.EntityModelBuilders;
+using Library.DataBase.GeneralRepository;
 using Microsoft.EntityFrameworkCore;
 using NLog;
 using NLog.Web;
@@ -9,7 +12,7 @@ var logger = NLog.LogManager
     .Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 try
 {
-var builder = WebApplication.CreateBuilder(args);
+    var builder = WebApplication.CreateBuilder(args);
 
     // log youe application at trace level 
     builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
@@ -26,33 +29,37 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddDbContext<Context>(options => options
 .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add services to the container.
+    // Add services to the container.
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IContext, Context>();
+    builder.Services.AddControllers();
+    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
+    builder.Services.AddScoped<IContext, Context>();
+    builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped(typeof(IGeneralRepository<>), typeof(GeneralRepository<>));
 
-//validator
-builder.Services.AddValidators();
 
-var app = builder.Build();
+    //validator
+    builder.Services.AddValidators();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    var app = builder.Build();
 
-app.UseHttpsRedirection();
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+    app.UseMiddleware(typeof(GlobalExceptionHandling));
 
-app.UseAuthorization();
+    app.UseHttpsRedirection();
 
-app.MapControllers();
+    app.UseAuthorization();
 
-app.Run();
+    app.MapControllers();
+
+    app.Run();
 
 }
 catch (Exception ex)
