@@ -1,14 +1,17 @@
+using FluentValidation.AspNetCore;
 using Library;
 using Library.Application.LibraryServ;
 using Library.Application.UserServ;
 using Library.Data.Domein.Domein;
 using Library.Data.Domein.Domein.EntityModelBuilders;
 using Library.DataBase.GeneralRepository;
+using Library.Infrastructure.Dto;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
 using NLog.Web;
+using System.Reflection;
 using System.Text.Json.Serialization;
 
 var logger = NLog.LogManager
@@ -30,13 +33,23 @@ try
 
     // Add services to the container.
 
-    builder.Services.AddControllers();
+    builder.Services.AddControllers().AddFluentValidation(options =>
+    {
+        options.ImplicitlyValidateChildProperties = true;
+        options.ImplicitlyValidateRootCollectionElements = true;
+
+        options.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+    });
+
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<ILibraryService,LibraryService>();
     builder.Services.AddScoped(typeof(IGeneralRepository<>), typeof(GeneralRepository<>));
+
+    //validator
+    builder.Services.AddValidators();
 
 
     //validator
@@ -67,9 +80,8 @@ try
     app.UseMiddleware(typeof(GlobalExceptionHandling));
 
     app.UseHttpsRedirection();
-
     app.UseAuthorization();
-
+    app.UseAuthentication();
     app.MapControllers();
 
     app.Run();

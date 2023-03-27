@@ -181,7 +181,7 @@ namespace Library.Application.LibraryServ
                 .Include(x => x.BooksAuthors)
                 .ThenInclude(x => x.Book)
                 .SelectMany(x => x.BooksAuthors)
-                .Select(x => x.Book)
+                .Select(x => x.Book).Where(x=>x.InLibrary==true)
                 .ToListAsync();
 
             return new SuccessApiResponse<List<GetBookByAutorDto>>(result.Select(x =>
@@ -198,6 +198,14 @@ namespace Library.Application.LibraryServ
             }).ToList());
 
 
+        }
+        public async Task<ApiResponse<string>>DeleteBook(int bookId)
+        {
+            var bookDb = await _bookRepo.Where(x => x.Id == bookId).FirstOrDefaultAsync();
+            if (bookDb == null) return new BadApiResponse<string>("Book does not exist");
+            await _bookRepo.Delete(bookDb);
+            await _bookRepo.SaveChangesAsync();
+            return new SuccessApiResponse<string>("The book has been deleted succesfuly");
         }
     }
 }

@@ -48,12 +48,19 @@ namespace Library.Controllers
             return ResponseResult(await _libraryService.BookStatusChange(bookId, inLibrary));
         }
 
-
+        [Authorize(Roles = "member", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]        
         [HttpPost("GetBooksByAuthor")]
         public async Task<ActionResult<ApiResponse<List<GetBookByAutorDto>>>> GetBookByAutor(AuthorDto request)
         {
             return ResponseResult(await _libraryService.GetBookByAutor(request));
         }
 
+
+        [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpDelete("DeleteBook")]
+        public async Task<ActionResult<ApiResponse<string>>> DeleteBook(int bookId)
+        {
+            return ResponseResult(await _libraryService.DeleteBook(bookId));
+        }
     }
 }

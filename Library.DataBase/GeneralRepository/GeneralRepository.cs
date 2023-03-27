@@ -55,20 +55,7 @@ namespace Library.DataBase.GeneralRepository
         {
             return _entities.AsNoTracking().Where(predicate);
         }
-        public IQueryable<TSource> Include(params Expression<Func<TSource, object>>[] includes)
-        {
-            IQueryable<TSource> query = _entities;
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
-            return query;
-        }     
-        public IQueryable<TSource> IncludeMultiple(IEnumerable<Expression<Func<TSource, object>>> includes)
-        {
-            IQueryable<TSource> query = _entities;
-            return includes.Aggregate(query, (current, include) => current.Include(include));
-        }
+      
 
         public IQueryable<TSource> AsQuareble()
         {

@@ -15,5 +15,6 @@ namespace Library.Application.LibraryServ
         Task<ApiResponse<List<GetBooksDto>>> GetBooksByFiltering(FilterBookDto request);
         Task<ApiResponse<string>> BookStatusChange(int bookId, bool inLibrrary);
         Task<ApiResponse<List<GetBookByAutorDto>>> GetBookByAutor(AuthorDto request);
+        Task<ApiResponse<string>> DeleteBook(int bookId);
     }
 }
