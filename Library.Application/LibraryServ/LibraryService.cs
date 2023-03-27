@@ -103,14 +103,15 @@ namespace Library.Application.LibraryServ
             }
             return new BadApiResponse<string>("Book is already exist");
         }
-        public async Task<ApiResponse<UpdateBookDto>> UpdateBook(UpdateBookDto request, string bookName)
+        public async Task<ApiResponse<UpdateBookDto>> UpdateBook(UpdateBookDto request, int bookId)
         {
-            var bookDb = await _bookRepo.Where(x => x.Title == bookName).FirstOrDefaultAsync();
+            var bookDb = await _bookRepo.Where(x => x.Id == bookId).FirstOrDefaultAsync();
             if (bookDb != null)
             {
                 bookDb.Title = request.Title == null ? bookDb.Title : request.Title;
                 bookDb.Description = request.Description == null ? bookDb.Description : request.Description;
                 bookDb.Rating = request.Rating == null ? bookDb.Rating : request.Rating;
+                await _bookRepo.Update(bookDb);
                 await _bookRepo.SaveChangesAsync();
                 return new SuccessApiResponse<UpdateBookDto>(new UpdateBookDto
                 {

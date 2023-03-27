@@ -28,9 +28,9 @@ namespace Library.Controllers
 
         [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("UpdateBook")]
-        public async Task<ActionResult<ApiResponse<UpdateBookDto>>> UpdateBook(UpdateBookDto request, string bookName)
+        public async Task<ActionResult<ApiResponse<UpdateBookDto>>> UpdateBook(UpdateBookDto request, int bookId)
         {
-            return ResponseResult(await _libraryService.UpdateBook(request, bookName));
+            return ResponseResult(await _libraryService.UpdateBook(request, bookId));
         }
 
 

@@ -1,4 +1,5 @@
 using FluentValidation.AspNetCore;
+using FluentValidation.Validators;
 using Library;
 using Library.Application.LibraryServ;
 using Library.Application.UserServ;
@@ -6,6 +7,7 @@ using Library.Data.Domein.Domein;
 using Library.Data.Domein.Domein.EntityModelBuilders;
 using Library.DataBase.GeneralRepository;
 using Library.Infrastructure.Dto;
+using Library.Infrastructure.PropertyValidator;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -46,6 +48,7 @@ try
     builder.Services.AddSwaggerGen();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<ILibraryService,LibraryService>();
+    builder.Services.AddScoped<IPropertyValidators, PropertyValidators>();
     builder.Services.AddScoped(typeof(IGeneralRepository<>), typeof(GeneralRepository<>));
 
     //validator
