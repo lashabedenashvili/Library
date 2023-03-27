@@ -47,5 +47,13 @@ namespace Library.Controllers
         {
             return ResponseResult(await _libraryService.BookStatusChange(bookId, inLibrary));
         }
+
+
+        [HttpPost("GetBooksByAuthor")]
+        public async Task<ActionResult<ApiResponse<List<GetBookByAutorDto>>>> GetBookByAutor(AuthorDto request)
+        {
+            return ResponseResult(await _libraryService.GetBookByAutor(request));
+        }
+
     }
 }

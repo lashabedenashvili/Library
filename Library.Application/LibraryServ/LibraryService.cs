@@ -5,7 +5,7 @@ using Library.Infrastructure.Dto.LibraryDto;
 using Microsoft.EntityFrameworkCore;
 namespace Library.Application.LibraryServ
 {
-    public class LibraryService: ILibraryService
+    public class LibraryService : ILibraryService
     {
         private readonly IGeneralRepository<Author> _authorRepo;
         private readonly IGeneralRepository<Book> _bookRepo;
@@ -13,7 +13,7 @@ namespace Library.Application.LibraryServ
 
         public LibraryService
             (
-            IGeneralRepository<Author>authorRepo,
+            IGeneralRepository<Author> authorRepo,
             IGeneralRepository<Book> bookRepo,
             IGeneralRepository<BooksAuthors> booksAuthorsRepo
             )
@@ -22,27 +22,27 @@ namespace Library.Application.LibraryServ
             _bookRepo = bookRepo;
             _booksAuthorsRepo = booksAuthorsRepo;
         }
-        public async Task<ApiResponse<string>>BookStatusChange(int bookId, bool inLibrary)
+        public async Task<ApiResponse<string>> BookStatusChange(int bookId, bool inLibrary)
         {
-           var bookStatusDb = await _bookRepo
-                .Where(x => x.Id == bookId)
-                .FirstOrDefaultAsync();
+            var bookStatusDb = await _bookRepo
+                 .Where(x => x.Id == bookId)
+                 .FirstOrDefaultAsync();
 
             if (bookStatusDb == null) return new BadApiResponse<string>("Book does not exist");
             if (bookStatusDb.InLibrary == inLibrary) return new BadApiResponse<string>("");
 
-            bookStatusDb.InLibrary= inLibrary;
+            bookStatusDb.InLibrary = inLibrary;
             await _bookRepo.Update(bookStatusDb);
             await _bookRepo.SaveChangesAsync();
             return new SuccessApiResponse<string>("Book status has been changed");
         }
-        private async Task<ApiResponse<byte[]>>ImageValidator(string image)
+        private async Task<ApiResponse<byte[]>> ImageValidator(string image)
         {
             var bytedata = Convert.FromBase64String(image);
             using var stream = new MemoryStream(bytedata);
             var imgD = await Image.LoadAsync(stream);
             var format = Image.DetectFormat(bytedata);
-            if (format.Name!= "PNG") return new BadApiResponse<byte[]>("Not Allowed Format");
+            if (format.Name != "PNG") return new BadApiResponse<byte[]>("Not Allowed Format");
             return new SuccessApiResponse<byte[]>(bytedata);
         }
         public async Task<ApiResponse<string>> AddBook(AddBookDto request)
@@ -51,7 +51,7 @@ namespace Library.Application.LibraryServ
             if (!validateIamge.Succes) return new BadApiResponse<string>(validateIamge.Message, validateIamge.ErrorCode);
 
             var bookAuthor = new List<BooksAuthors>();
-            var bookDB= await _bookRepo.AnyAsync(x=>x.Title==request.BookDto.Title);
+            var bookDB = await _bookRepo.AnyAsync(x => x.Title == request.BookDto.Title);
             if (!bookDB)
             {
                 var book = new Book
@@ -100,17 +100,17 @@ namespace Library.Application.LibraryServ
                 book.BooksAuthors = bookAuthor;
                 await _bookRepo.SaveChangesAsync();
                 return new SuccessApiResponse<string>("Book has been added");
-            }           
-                return new BadApiResponse<string>("Book is already exist");
+            }
+            return new BadApiResponse<string>("Book is already exist");
         }
-        public async Task<ApiResponse<UpdateBookDto>>UpdateBook(UpdateBookDto request, string bookName)
+        public async Task<ApiResponse<UpdateBookDto>> UpdateBook(UpdateBookDto request, string bookName)
         {
             var bookDb = await _bookRepo.Where(x => x.Title == bookName).FirstOrDefaultAsync();
             if (bookDb != null)
             {
-                bookDb.Title=request.Title==null? bookDb.Title:request.Title;
-                bookDb.Description=request.Description==null? bookDb.Description:request.Description;
-                bookDb.Rating=request.Rating==null?bookDb.Rating:request.Rating;    
+                bookDb.Title = request.Title == null ? bookDb.Title : request.Title;
+                bookDb.Description = request.Description == null ? bookDb.Description : request.Description;
+                bookDb.Rating = request.Rating == null ? bookDb.Rating : request.Rating;
                 await _bookRepo.SaveChangesAsync();
                 return new SuccessApiResponse<UpdateBookDto>(new UpdateBookDto
                 {
@@ -125,7 +125,7 @@ namespace Library.Application.LibraryServ
         {
 
             var data = _bookRepo.AsQuareble()
-                .Where(x=>x.InLibrary==true)
+                .Where(x => x.InLibrary == true)
                 .Include(e => e.BooksAuthors)
                 .ThenInclude(e => e.Author).AsQueryable();
 
@@ -144,7 +144,7 @@ namespace Library.Application.LibraryServ
 
             data = data.Skip((request.PageNumb - 1) * request.PageSize).Take(request.PageSize);
 
-            var result = await data.ToListAsync();            
+            var result = await data.ToListAsync();
 
             return new SuccessApiResponse<List<GetBooksDto>>(result.Select(e =>
            {
@@ -162,12 +162,42 @@ namespace Library.Application.LibraryServ
                        Surname = e.Author.Surname,
                        BirthDate = e.Author.BirthDate
                    } }).ToList()
-                };
+               };
            }).ToList());
-        
-        }
-        public async Task<ApiResponse<List<>
-        
 
+        }
+        public async Task<ApiResponse<List<GetBookByAutorDto>>> GetBookByAutor(AuthorDto request)
+        {
+            var data = _authorRepo
+                .AsQuareble()
+                 .AsQueryable();
+          
+            if (!string.IsNullOrEmpty(request.Name))
+                data = data.Where(x => x.Name.Contains(request.Name));
+            if (!string.IsNullOrEmpty(request.Surname))
+                data = data.Where(x => x.Surname.Contains(request.Surname));
+
+            var result = await data
+                .Include(x => x.BooksAuthors)
+                .ThenInclude(x => x.Book)
+                .SelectMany(x => x.BooksAuthors)
+                .Select(x => x.Book)
+                .ToListAsync();
+
+            return new SuccessApiResponse<List<GetBookByAutorDto>>(result.Select(x =>
+            {
+                return new GetBookByAutorDto()
+                {
+                    Description = x.Description,
+                    Id = x.Id,
+                    Image = Convert.ToBase64String(x.Image),
+                    InLibrary = x.InLibrary,
+                    Rating = x.Rating,
+                    Title = x.Title
+                };
+            }).ToList());
+
+
+        }
     }
 }
